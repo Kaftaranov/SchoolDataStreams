@@ -29,8 +29,8 @@ public class AvatarService {
     }
     public void uploadAvatar(Long studentId, MultipartFile file)throws IOException{
         Student student = studentService.findById(studentId);
-        Path filePath = Path.of(Path.of(avatarDir, String.valueOf(student)) + "."
-                + getExtension(Objects.requireNonNull(file.getOriginalFilename())));
+        Path filePath = Path.of(avatarDir,student  + "."
+                + getExtension(file.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
         try (InputStream is = file.getInputStream();
@@ -54,7 +54,6 @@ public class AvatarService {
     }
 
     private String getExtension(String filename) {
-
         return filename.substring(filename.lastIndexOf(".") + 1);
     }
 }
