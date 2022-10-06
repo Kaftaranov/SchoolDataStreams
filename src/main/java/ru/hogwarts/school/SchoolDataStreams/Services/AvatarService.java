@@ -11,7 +11,6 @@ import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -29,22 +28,21 @@ public class AvatarService {
     }
     public void uploadAvatar(Long studentId, MultipartFile file)throws IOException{
         Student student = studentService.findById(studentId);
-        Path filePath = Path.of(Path.of(avatarDir, String.valueOf(student)) + "."
-                + getExtension(Objects.requireNonNull(file.getOriginalFilename())));
+        Path filePath = Path.of(avatarDir,student  + "."
+                + getExtension(file.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
-        try (InputStream is = file.getInputStream();
-             OutputStream os = Files.newOutputStream(filePath,CREATE_NEW);
-             BufferedInputStream bis = new BufferedInputStream(is,1024);
-             BufferedOutputStream bos = new BufferedOutputStream(os,1024);
+        try (BufferedInputStream bis = new BufferedInputStream(file.getInputStream(),1024);
+             BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath,CREATE_NEW),1024);
              ){
             bis.transferTo(bos);
         }
         Avatar avatar = findAvatar(studentId);
         avatar.setStudent(student);
-        avatar.setFilePath(filePath.toString());
+        avatar.setFilePath(filePath);
         avatar.setFileSize(file.getSize());
         avatar.setMediaType(file.getContentType());
+        avatar.setAvatar(file.getBytes());
         avatarRepository.save(avatar);
     }
     public Avatar findAvatar(Long student_id){
@@ -52,9 +50,7 @@ public class AvatarService {
         return avatarRepository.findByStudentId(student_id);}
         return new Avatar();
     }
-
     private String getExtension(String filename) {
-
         return filename.substring(filename.lastIndexOf(".") + 1);
     }
 }
