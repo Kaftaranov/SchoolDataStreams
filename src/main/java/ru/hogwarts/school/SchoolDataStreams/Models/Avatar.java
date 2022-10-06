@@ -1,6 +1,7 @@
 package ru.hogwarts.school.SchoolDataStreams.Models;
 
 import javax.persistence.*;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -37,8 +38,8 @@ public class Avatar {
     public void setId(Long id) {
         this.id = id;
     }
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFilePath(Path filePath) {
+        this.filePath = String.valueOf(filePath);
     }
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
